@@ -1,0 +1,20 @@
+{
+  "name": "personal-finance-tracker",
+  "version": "1.0.0",
+  "description": "A command-line personal finance tracker.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "finance",
+    "tracker",
+    "chalk",
+    "hackyourfuture"
+  ],
+  "author": "Z.ai GLM-5.3",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "personal-finance-tracker",
+  "version": "1.0.0",
+  "description": "Command-line personal finance tracker for income and expenses",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "keywords": [
+    "finance",
+    "cli",
+    "hackyourfuture"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "4.1.2"
+  },
+  "author": "Claude Opus 5.5"
+}

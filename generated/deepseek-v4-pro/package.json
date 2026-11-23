@@ -1,0 +1,20 @@
+{
+  "name": "personal-finance-tracker",
+  "version": "1.0.0",
+  "description": "A command-line personal finance tracker that manages income and expenses.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "finance",
+    "tracker",
+    "cli",
+    "node"
+  ],
+  "author": "DeepSeek V4 Pro",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "4.1.2"
+  }
+}

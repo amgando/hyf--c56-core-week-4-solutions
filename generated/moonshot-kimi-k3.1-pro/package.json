@@ -1,0 +1,15 @@
+{
+  "name": "personal-finance-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A command-line personal finance tracker built with Node.js.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "4.1.2"
+  },
+  "author": "Moonshot Kimi K3.1 Pro"
+}
