@@ -1,0 +1,13 @@
+{
+  "name": "break-it",
+  "version": "1.0.0",
+  "description": "Looks for inputs that break a rule, in four of the finance tracker solutions",
+  "private": true,
+  "scripts": {
+    "ids": "node unique-ids.js",
+    "category": "node category.js"
+  },
+  "dependencies": {
+    "fast-check": "^4.11.0"
+  }
+}
