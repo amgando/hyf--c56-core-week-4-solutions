@@ -14,13 +14,3 @@ Solution to the Week 4 assignment in [`../../notion.md`](../../notion.md), writt
 npm install
 npm start
 ```
-
-## Features (from the model's original README)
-
-- Add and remove transactions
-- Total income, total expenses and current balance
-- Filter transactions by category
-- Search transactions by date range
-- Monthly overview grouped with nested objects
-- Average expense per category
-- Longest streak of expensive months (while loop)
