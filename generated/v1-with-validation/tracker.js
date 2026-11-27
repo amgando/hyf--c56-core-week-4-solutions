@@ -2,6 +2,9 @@ import { transactions } from "./transactions.js"
 import chalk from "chalk"
 import { validate } from "./util1.js"
 
+// export validate again, so that index.js prints errors from the same version
+export { validate }
+
 export function printSummary() {
   console.log(`
 💰 PERSONAL FINANCE TRACKER 💰

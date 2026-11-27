@@ -1,10 +1,12 @@
-# Validating a transaction, seven ways
+# Personal Finance Tracker: v1 with validation, seven ways
 
 I wrote this income and expense tracker by hand, as my solution to the Week 4 assignment in [`../../notion.md`](../../notion.md). The tracker is the same as [`handwritten/v1`](../../handwritten/v1), with one addition: `addTransaction` validates each new transaction.
 
 That addition started with a simple question: how do I check that a new transaction has the same shape as the examples in `transactions.js`? I wrote a simple validation by hand. Then I asked Claude to draw a path from that first draft to the Zod schema library, in several sensible steps, so that someone can follow the logic of how a library like Zod comes to exist. Over two or three more passes with Claude, we cleaned up the versions so that they all share one interface and report errors the same way. The result is seven versions of the same validator, from hand-written checks to Zod.
 
 Each version is a small step from the one before it. The goal is to show where the concepts behind a validation library come from, and the point at which using a library becomes worth it.
+
+This folder is optional reading. From `util4.js` onward, the code goes past the Week 4 material: functions stored as values, and functions that return functions. The [root README](../../README.md#javascript-here-that-can-be-new-to-you) has a page to read for each of these.
 
 ## The problem
 
@@ -37,7 +39,7 @@ Every `utilN.js` file exports the same function, `validate(tx)`, with the same r
 { success: false, errors }   // invalid: errors is an array of messages
 ```
 
-Because the interface never changes, switching versions is a one-line change to the import in `tracker.js` (and in `index.js`, which prints the errors):
+Because the interface never changes, switching versions is a one-line change to the import in `tracker.js`. `tracker.js` exports `validate` again, so `index.js` prints the errors from the same version:
 
 ```javascript
 import { validate } from './util1.js';   // change to util2.js, util3.js, ...
@@ -57,7 +59,7 @@ import { validate } from './util1.js';   // change to util2.js, util3.js, ...
 
 Each file begins with a comment header describing what it introduces and how its behaviour differs from the previous version.
 
-## Running the tracker
+## Run
 
 ```bash
 npm install

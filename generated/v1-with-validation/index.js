@@ -1,5 +1,4 @@
 import * as tracker from './tracker.js'
-import { validate } from './util1.js';
 
 let newTx = tracker.addTransaction({
   type: 'income',
@@ -21,8 +20,11 @@ const tx = {
 };
 
 let newTx2 = tracker.addTransaction(tx)
-console.dir(validate(tx))
+console.dir(tracker.validate(tx))
 
+// tx has no `type`, so addTransaction returned -1.
+// The throw stops the program here on purpose. Node prints the error and a stack trace.
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/throw
 if(newTx2 === -1) throw new Error(`Invalid Tx: ${JSON.stringify(tx)}`)
 
 tracker.printSummary()
