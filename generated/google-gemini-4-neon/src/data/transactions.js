@@ -1,0 +1,122 @@
+/**
+ * Initial seed transactions for the Personal Finance Tracker.
+ * Spans multiple months and categories to support both core features
+ * and bonus analytics (date range search, monthly grouping, category averages,
+ * and consecutive expensive months detection).
+ */
+const initialTransactions = [
+  {
+    id: 1,
+    type: 'income',
+    category: 'salary',
+    amount: 3000,
+    description: 'Monthly salary',
+    date: '2025-01-15',
+  },
+  {
+    id: 2,
+    type: 'expense',
+    category: 'housing',
+    amount: 1200,
+    description: 'Rent',
+    date: '2025-01-01',
+  },
+  {
+    id: 3,
+    type: 'expense',
+    category: 'food',
+    amount: 300,
+    description: 'Groceries',
+    date: '2025-01-10',
+  },
+  {
+    id: 4,
+    type: 'income',
+    category: 'side-income',
+    amount: 500,
+    description: 'Freelance web project',
+    date: '2025-01-20',
+  },
+  {
+    id: 5,
+    type: 'expense',
+    category: 'bills',
+    amount: 150,
+    description: 'Utilities',
+    date: '2025-01-25',
+  },
+  {
+    id: 6,
+    type: 'income',
+    category: 'salary',
+    amount: 3000,
+    description: 'Monthly salary',
+    date: '2025-02-15',
+  },
+  {
+    id: 7,
+    type: 'expense',
+    category: 'housing',
+    amount: 1200,
+    description: 'Rent',
+    date: '2025-02-01',
+  },
+  {
+    id: 8,
+    type: 'expense',
+    category: 'food',
+    amount: 340,
+    description: 'Weekly groceries',
+    date: '2025-02-14',
+  },
+  {
+    id: 9,
+    type: 'expense',
+    category: 'transport',
+    amount: 420,
+    description: 'Train pass and bike service',
+    date: '2025-02-18',
+  },
+  {
+    id: 10,
+    type: 'income',
+    category: 'salary',
+    amount: 3000,
+    description: 'Monthly salary',
+    date: '2025-03-15',
+  },
+  {
+    id: 11,
+    type: 'expense',
+    category: 'housing',
+    amount: 1200,
+    description: 'Rent',
+    date: '2025-03-01',
+  },
+  {
+    id: 12,
+    type: 'expense',
+    category: 'food',
+    amount: 220,
+    description: 'Groceries and snacks',
+    date: '2025-03-12',
+  },
+  {
+    id: 13,
+    type: 'expense',
+    category: 'travel',
+    amount: 550,
+    description: 'Spring holiday flight',
+    date: '2025-04-05',
+  },
+  {
+    id: 14,
+    type: 'expense',
+    category: 'housing',
+    amount: 1200,
+    description: 'Rent',
+    date: '2025-04-01',
+  },
+];
+
+module.exports = initialTransactions;

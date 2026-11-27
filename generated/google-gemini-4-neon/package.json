@@ -1,0 +1,21 @@
+{
+  "name": "personal-finance-tracker",
+  "version": "1.0.0",
+  "description": "Week 4 Assignment - Command-line personal finance tracker built with Node.js and Chalk",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "finance",
+    "cli",
+    "tracker",
+    "chalk",
+    "hyf"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "4.1.2"
+  }
+}
