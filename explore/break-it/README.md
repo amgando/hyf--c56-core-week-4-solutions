@@ -2,14 +2,14 @@
 
 When you test your own code, you try the inputs you thought of. A bug can be in an input you did not think of.
 
-There is a kind of tool that makes up the inputs for you, hundreds of them, and looks for one that breaks your code. The technique is called property-based testing. Fuzzing is a close relative. This folder uses a library for it: [fast-check](https://fast-check.dev/).
+There is a kind of tool that makes up the inputs for you and looks for one that breaks your code. The technique is called property-based testing. Fuzzing is a close relative. This folder uses a library for it: [fast-check](https://fast-check.dev/).
 
 You give it two things:
 
 1. A recipe for the input: "any transaction", "any string".
 2. A rule that must hold for every input: "a new transaction never gets an id that is already taken".
 
-It tries 100 inputs. If one breaks the rule, it shows you that input.
+It makes up inputs from the recipe, one after another, and checks the rule for each. It stops at the first input that breaks the rule and shows it to you.
 
 ## Run
 
@@ -21,6 +21,34 @@ npm run category
 ```
 
 Four of the ten solutions are tested: Claude, Grok, GLM and Gemini. [`solutions.js`](solutions.js) says why these four.
+
+## The inputs
+
+### Which inputs?
+
+Random ones, built from the recipe. The recipe "any string of 0 to 8 characters" gives strings like these:
+
+```
+"ref"  "IB^Kb'"  "valueOf"  ""  "5uF"  "name"  "P&eO&ref"  "c"  "`*F@^"  "{ nd"  "\"ENW*9oU"  "k"
+```
+
+Each script prints a few of its inputs before the results, so you can see them.
+
+### Are they the same every time?
+
+No. Every run makes up new ones. Run a script twice and the examples differ.
+
+### Are they only random?
+
+Mostly. fast-check also mixes in values that often cause trouble, such as the empty string `""` and words that mean something to JavaScript, like `valueOf`. Both are in the line above.
+
+### Why 100?
+
+It is the number fast-check tries when you do not give one. The scripts set it in one place, `numRuns: 100`. Change it to `1000` and run again.
+
+### Does it try all 100?
+
+Only when the rule holds. It stops at the first input that breaks the rule. The output says which one that was: "broken by string number 5".
 
 ## Rule 1: ids are unique
 
@@ -42,7 +70,7 @@ const anyTransaction = fc.record(
 );
 ```
 
-`id` is not in `requiredKeys`, so some of the made-up transactions have an id and some do not.
+Read it as: the id is any whole number from 0 to 50, the type is one of these two words, the amount is any whole number from 1 to 5000. `id` is not in `requiredKeys`, so some of the made-up transactions have an id and some do not.
 
 The rule:
 
@@ -66,32 +94,41 @@ Which of the four do you expect to break?
 <details>
 <summary>What <code>npm run ids</code> prints</summary>
 
+Your transactions and numbers will differ. The four results will not.
+
 ```
-Claude: held for 100 transactions
-Grok: broken by {
-  id: 0,
-  type: 'income',
-  category: 'food',
-  amount: 1,
-  description: 'lunch',
-  date: '2025-06-01'
-}
-GLM: broken by {
-  id: 1,
-  type: 'income',
-  category: 'food',
-  amount: 1,
-  description: 'lunch',
-  date: '2025-06-01'
-}
-Gemini: broken by {
-  id: 0,
-  type: 'income',
-  category: 'food',
-  amount: 1,
-  description: 'lunch',
-  date: '2025-06-01'
-}
+Rule
+  A new transaction never gets an id that another transaction already has.
+
+Inputs
+  Random transactions, made up by fast-check. Some have an id, some do not.
+  Up to 100 per solution. They are different every time you run this.
+  Four of them, as an example:
+  {"id":35,"type":"income","category":"food","amount":2151,"description":"lunch","date":"2025-06-01"}
+  {"id":44,"type":"expense","category":"food","amount":11,"description":"lunch","date":"2025-06-01"}
+  {"id":29,"type":"income","category":"food","amount":2645,"description":"pay","date":"2025-06-01"}
+  {"id":49,"type":"income","category":"food","amount":13,"description":"lunch","date":"2025-06-01"}
+
+Results
+  Claude: held for all 100 transactions
+  Grok: broken by transaction number 1
+      first transaction that broke it
+      {"id":4,"type":"expense","category":"salary","amount":2509,"description":"lunch","date":"2025-06-01"}
+      smallest transaction that breaks it
+      {"id":0,"type":"income","category":"food","amount":1,"description":"lunch","date":"2025-06-01"}
+      id 0 was already taken
+  GLM: broken by transaction number 1
+      first transaction that broke it
+      {"id":2,"type":"expense","category":"housing","amount":4918,"description":"rent","date":"2025-06-01"}
+      smallest transaction that breaks it
+      {"id":1,"type":"income","category":"food","amount":1,"description":"lunch","date":"2025-06-01"}
+      id 1 was already taken
+  Gemini: broken by transaction number 1
+      first transaction that broke it
+      {"id":4,"type":"expense","category":"food","amount":4990,"description":"rent","date":"2025-06-01"}
+      smallest transaction that breaks it
+      {"id":0,"type":"income","category":"food","amount":1,"description":"lunch","date":"2025-06-01"}
+      id 0 was already taken
 ```
 
 Claude always sets the id itself. Grok, GLM and Gemini keep an id that comes in with the transaction and do not check whether it is taken. [One function, ten ways](../one-function-ten-ways.md) shows the lines.
@@ -99,18 +136,20 @@ Claude always sets the id itself. Grok, GLM and Gemini keep an id that comes in 
 </details>
 
 <details>
-<summary>Every broken transaction has <code>amount: 1</code>, <code>'income'</code>, <code>'food'</code> and <code>'lunch'</code>. Why so tidy?</summary>
+<summary>The output has a "first" and a "smallest" transaction. What is the difference?</summary>
 
-The first transaction that broke the rule was a random one. fast-check then made it smaller, one field at a time, and kept every change that still broke the rule. What is left is the smallest transaction that breaks it. This is called shrinking.
+The first one is the random transaction that broke the rule: `id: 4`, an expense, `amount: 2509`.
 
-It tells you what matters. The amount, the type and the category went down to their first or lowest value, so they have nothing to do with the bug. The `id` is the field that could not be removed.
+fast-check then makes it smaller, one field at a time, and keeps every change that still breaks the rule. What is left is the smallest transaction that breaks it: `amount: 1`, the first type, the first category. This is called shrinking.
+
+It tells you what matters. The amount, the type and the category went down to their lowest or first value, so they have nothing to do with the bug. The `id` is the field that could not be removed.
 
 </details>
 
 <details>
 <summary>No solution starts with a transaction that has id <code>0</code>. How can <code>id: 0</code> be taken in Grok and Gemini?</summary>
 
-An earlier made-up transaction with `id: 0` was added in the same run. Grok and Gemini stored it with that id. The next one with `id: 0` found it taken.
+An earlier made-up transaction with `id: 0` was stored first: one of the random ones, or one that fast-check tried while shrinking. Grok and Gemini kept that id. The next transaction with `id: 0` found it taken.
 
 </details>
 
@@ -125,7 +164,7 @@ GLM sets the id with `newTransaction.id || highestId + 1`. `0` is falsy, so `||`
 
 > `getTransactionsByCategory(category)` returns only transactions whose category is exactly `category`.
 
-The recipe is "any string, up to 8 characters". The rule is a loop. Write it yourself, or read [`category.js`](category.js).
+The recipe is "any string of 0 to 8 characters". The rule is a loop. Write it yourself, or read [`category.js`](category.js).
 
 <details>
 <summary>The test</summary>
@@ -148,14 +187,39 @@ const rule = fc.property(anyCategory, (category) => {
 <details>
 <summary>What <code>npm run category</code> prints</summary>
 
+Your strings and numbers will differ. The four results will not.
+
 ```
-Claude: held for 100 strings
-Grok: broken by ""
-GLM: broken by ""
-Gemini: held for 100 strings
+Rule
+  getTransactionsByCategory(category) returns only transactions
+  whose category is exactly `category`.
+
+Inputs
+  Random strings of 0 to 8 characters, made up by fast-check.
+  Up to 100 per solution. They are different every time you run this.
+  Twelve of them, as an example:
+  "ref"  "IB^Kb'"  "valueOf"  ""  "5uF"  "name"  "P&eO&ref"  "c"  "`*F@^"  "{ nd"  "\"ENW*9oU"  "k"
+
+Results
+  Claude: held for all 100 strings
+  Grok: broken by string number 6
+      smallest string that breaks it  ""
+      getTransactionsByCategory("") returned 23 of 23 transactions
+  GLM: broken by string number 5
+      first string that broke it      "c"
+      smallest string that breaks it  ""
+      getTransactionsByCategory("") returned 8 of 8 transactions
+  Gemini: held for all 100 strings
 ```
 
-The input that breaks Grok and GLM is the empty string. Both use `includes` on the category, and every string includes the empty string: `'food'.includes('')` is `true`. So asking for the category `''` returns every transaction.
+</details>
+
+<details>
+<summary>Why does <code>"c"</code> break GLM? Why does <code>""</code>?</summary>
+
+GLM and Grok use `includes` on the category. `"c"` is inside `"side-income"`, so asking for the category `"c"` returns transactions whose category is not `"c"`.
+
+fast-check then shrank `"c"` to the empty string. Every string includes the empty string: `'food'.includes('')` is `true`. So asking for the category `""` returns every transaction, 8 of 8.
 
 The comparison table in the root README describes this bug as "`food` also matches `seafood`". That is the example a person thinks of. The tool found a smaller one.
 

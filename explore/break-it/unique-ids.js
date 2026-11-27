@@ -1,13 +1,12 @@
 // Rule under test:
 //   A new transaction never gets an id that another transaction already has.
 //
-// fast-check makes up 100 transactions per solution and looks for one
-// that breaks the rule.
+// fast-check makes up random transactions and looks for one that breaks the rule.
 
 const fc = require('fast-check');
 const { solutions } = require('./solutions');
 
-// A recipe for "any transaction". fast-check builds real objects from it.
+// The recipe for the input: any transaction.
 // `id` is not in requiredKeys, so some transactions have an id and some do not.
 const anyTransaction = fc.record(
   {
@@ -20,6 +19,21 @@ const anyTransaction = fc.record(
   },
   { requiredKeys: ['type', 'category', 'amount', 'description', 'date'] }
 );
+
+// JSON.stringify prints an object on one line.
+const show = (value) => JSON.stringify(value);
+
+console.log(`
+Rule
+  A new transaction never gets an id that another transaction already has.
+
+Inputs
+  Random transactions, made up by fast-check. Some have an id, some do not.
+  Up to 100 per solution. They are different every time you run this.
+  Four of them, as an example:
+  ${fc.sample(anyTransaction, 4).map(show).join('\n  ')}
+
+Results`);
 
 for (const { name, add, all } of solutions) {
   // The rule, as a function that returns true or false for one transaction.
@@ -36,11 +50,24 @@ for (const { name, add, all } of solutions) {
     return !idsBefore.includes(stored.id);
   });
 
-  const result = fc.check(rule);
+  // Try up to 100 transactions. Stop at the first one that breaks the rule.
+  // verbose: 1 makes fast-check remember every transaction that broke it.
+  const result = fc.check(rule, { numRuns: 100, verbose: 1 });
 
-  if (result.failed) {
-    console.log(`${name}: broken by`, result.counterexample[0]);
-  } else {
-    console.log(`${name}: held for ${result.numRuns} transactions`);
+  if (!result.failed) {
+    console.log(`  ${name}: held for all ${result.numRuns} transactions`);
+    continue;
   }
+
+  const first = result.failures[0][0];
+  const smallest = result.counterexample[0];
+
+  console.log(`  ${name}: broken by transaction number ${result.numRuns}`);
+  console.log(`      first transaction that broke it`);
+  console.log(`      ${show(first)}`);
+  console.log(`      smallest transaction that breaks it`);
+  console.log(`      ${show(smallest)}`);
+  console.log(`      id ${smallest.id} was already taken`);
 }
+
+console.log('');
