@@ -8,5 +8,5 @@ My handwritten solution to the Week 4 assignment in [`../../notion.md`](../../no
 
 ```bash
 npm install
-node index.js
+npm start
 ```
